@@ -9,17 +9,23 @@ title: 教材一覧
 
 ## 更新
 
-- ignore test
+- React-CDN & p5js
 
 ---
 
 ## 📚 教材リスト(ver.9)
 
-- [p5-js(放物線) の教材](work-p5.js/parabola-p5js.md)
+- [p5-js(放物線) の教材](work-p5js/parabola-p5js.md)
 
 ---
 
 - [React-CDN only & MathJax の教材](work-react/reactcdn_mathjax_fullsample_fixed.html)
+
+---
+
+- [React-CDN & p5js の教材](work-react-p5js/reactp5js.html)
+
+- [React-CDN & p5js & MathJax の教材](work-react-p5js/reactp5js_mathjax.html)
 
 ---
 
