@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>ReactCDN + SVG アニメーション</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body {
+      background: black;
+      color: white;
+      font-family: sans-serif;
+      padding: 1em;
+    }
+    svg {
+      background: white;
+      border: 1px solid gray;
+    }
+  </style>
+</head>
+<body>
+  <h1>y = sin(x + t) の波アニメーション</h1>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    function AnimatedGraph() {
+      const width = 600;
+      const height = 300;
+      const step = 1;
+      const scaleX = 2;
+      const scaleY = 80;
+      const originY = height / 2;
+
+      const [t, setT] = React.useState(0); // 時間変数
+
+      // アニメーション開始
+      React.useEffect(() => {
+        const id = setInterval(() => {
+          setT((prev) => prev + 0.1); // 時間を進める
+        }, 30); // 約30fps
+        return () => clearInterval(id); // クリーンアップ
+      }, []);
+
+      // 点列生成（y = sin(x + t)）
+      const points = [];
+      for (let x = 0; x <= width; x += step) {
+        const xVal = (x - width / 2) / scaleX;
+        const yVal = Math.sin(xVal + t);
+        const svgY = originY - yVal * scaleY;
+        points.push(`${x},${svgY}`);
+      }
+
+      return (
+        <svg width={width} height={height}>
+          <line x1="0" y1={originY} x2={width} y2={originY} stroke="gray" strokeWidth="1" />
+          <line x1={width / 2} y1="0" x2={width / 2} y2={height} stroke="gray" strokeWidth="1" />
+          <polyline
+            fill="none"
+            stroke="blue"
+            strokeWidth="2"
+            points={points.join(" ")}
+          />
+          <text x="10" y="20" fontSize="16" fill="black">y = sin(x + t)</text>
+        </svg>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<AnimatedGraph />);
+  </script>
+</body>
+</html>

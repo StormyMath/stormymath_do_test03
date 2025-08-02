@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>ReactCDN + SVG: y = sin(x) グラフ描画</title>
+
+    <!-- React と ReactDOM をCDNで読み込み（JSX変換は Babelが必要） -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+      body {
+        background: black;
+        color: white;
+        font-family: sans-serif;
+        padding: 1em;
+      }
+      svg {
+        background: white;
+        border: 1px solid gray;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>ReactCDN + SVG: y = sin(x)</h1>
+    <div id="root"></div>
+
+    <!-- JSX を使うために type="text/babel" にしている -->
+    <script type="text/babel">
+      function Graph() {
+        const width = 600;      // SVG全体の横幅
+        const height = 300;     // SVG全体の縦幅
+        const step = 1;         // x方向の刻み幅（px単位）
+        const scaleX = 2;       // 実際のx値（ラジアン）との拡大倍率
+        const scaleY = 80;      // y値（sin(x)）を画面上に拡大する倍率
+
+        const originX = 0;               // xの原点（今回は左端）
+        const originY = height / 2;      // y=0 の位置 → SVGの中心
+
+        // ---- sin(x) の点を描画するための点列を作る ----
+        const points = [];
+        for (let x = 0; x <= width; x += step) {
+          const xVal = (x - width / 2) / scaleX; // 中心を原点に → -π ~ π
+          const yVal = Math.sin(xVal);           // y = sin(x)
+          const svgX = x;                         // そのまま横に描く
+          const svgY = originY - yVal * scaleY;   // SVGは下が+なので反転
+          points.push(`${svgX},${svgY}`);         // "x,y" 形式で保存
+        }
+
+        return (
+          <svg width={width} height={height}>
+            {/* x軸（中心を横に1本線） */}
+            <line
+              x1="0"
+              y1={originY}
+              x2={width}
+              y2={originY}
+              stroke="gray"
+              strokeWidth="1"
+            />
+
+            {/* y軸（中心を縦に1本線） */}
+            <line
+              x1={width / 2}
+              y1="0"
+              x2={width / 2}
+              y2={height}
+              stroke="gray"
+              strokeWidth="1"
+            />
+
+            {/* 折れ線（点をつなぐ）で sin(x) を描画 */}
+            <polyline
+              fill="none"                      // 塗りつぶさない
+              stroke="blue"                    // 線の色
+              strokeWidth="2"                  // 線の太さ
+              points={points.join(" ")}        // 事前に作った点列を連結
+            />
+
+            {/* グラフタイトルなどラベル */}
+            <text x="10" y="20" fontSize="16" fill="black">y = sin(x)</text>
+          </svg>
+        );
+      }
+
+      // JSXで作った Graph() を #root に描画する
+      ReactDOM.createRoot(document.getElementById("root")).render(<Graph />);
+    </script>
+  </body>
+</html>

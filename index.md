@@ -13,7 +13,7 @@ title: 教材一覧
 
 ---
 
-## 📚 教材リスト(ver.9)
+## 📚 教材サンプル
 
 - [p5-js(放物線) の教材](work-p5js/parabola-p5js.md)
 
@@ -26,6 +26,12 @@ title: 教材一覧
 - [React-CDN & p5js の教材](work-react-p5js/reactp5js.html)
 
 - [React-CDN & p5js & MathJax の教材](work-react-p5js/reactp5js_mathjax.html)
+
+---
+
+- [React-CDN & SVG - 静止](work-react/0717_sinecurve/sample_sinecurve01.html)
+
+- [React-CDN & SVG - アニメーション](work-react/0717_sinecurve/sample_sinecurve02.html)
 
 ---
 
