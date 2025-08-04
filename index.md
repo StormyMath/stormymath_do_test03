@@ -29,9 +29,13 @@ title: 教材一覧
 
 ---
 
-- [React-CDN & SVG - 静止](work-react/0717_sinecurve/sample_sinecurve01.html)
+- [React-CDN & SVG - sinカーブ-静止](work-react/sinecurve_20250717/sample_sinecurve01.html)
 
-- [React-CDN & SVG - アニメーション](work-react/0717_sinecurve/sample_sinecurve02.html)
+- [React-CDN & SVG - sinカーブ-アニメーション](work-react/sinecurve_20250717/sample_sinecurve02.html)
+
+- [React-CDN & SVG - 統計-代表値の計算-静止](work-react/sinecurve_20250717/sample_sinecurve01.html)
+
+- [React-CDN & SVG - 統計-代表値の計算-アニメーション](work-react/sinecurve_20250717/sample_sinecurve02.html)
 
 ---
 

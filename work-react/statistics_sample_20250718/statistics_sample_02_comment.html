@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>代表値の学習（アニメーション付き・コメント付き）</title>
+
+  <!-- React / ReactDOM CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+
+  <!-- Babel（JSX構文サポート） -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    svg { border: 1px solid #ccc; }
+    input { margin: 4px; width: 80px; }
+
+    /* アニメーションのためのCSS（SVGのrectに対して） */
+    rect {
+      transition: height 0.6s ease-out, y 0.6s ease-out;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- Reactコード（JSX） -->
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    function App() {
+      // 状態変数
+      const [data, setData] = useState([]);           // 元データ（例：10, 20, 15, ...）
+      const [animatedData, setAnimatedData] = useState([]); // アニメーション用の表示値
+      const [avg, setAvg] = useState('');             // ユーザーの平均入力
+      const [med, setMed] = useState('');             // ユーザーの中央値入力
+      const [mode, setMode] = useState('');           // ユーザーの最頻値入力
+      const [feedback, setFeedback] = useState('');   // フィードバック表示
+
+      // 初回レンダリング時にデータ生成
+      useEffect(() => {
+        generateData();
+      }, []);
+
+      // データ生成（5～10個のランダムな数値）
+      function generateData() {
+        const n = Math.floor(Math.random() * 6) + 5; // 5〜10個
+        const values = Array.from({ length: n }, () => Math.floor(Math.random() * 21) + 10); // 10〜30の数値
+        setData(values);               // 元データを保存
+        setAvg('');
+        setMed('');
+        setMode('');
+        setFeedback('');
+        setAnimatedData(Array(n).fill(0)); // 初期状態（高さ0）
+
+        // 100ms後に本来の値にする → CSSのtransitionで「伸びる」
+        setTimeout(() => {
+          setAnimatedData(values);
+        }, 100);
+      }
+
+      // 平均の計算（小数1位まで）
+      function calculateAverage(arr) {
+        return (arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(1);
+      }
+
+      // 中央値の計算
+      function calculateMedian(arr) {
+        const sorted = [...arr].sort((a, b) => a - b);
+        const mid = Math.floor(sorted.length / 2);
+        return sorted.length % 2 === 0
+          ? ((sorted[mid - 1] + sorted[mid]) / 2).toFixed(1)
+          : sorted[mid].toFixed(1);
+      }
+
+      // 最頻値の計算（同数最多が複数なら「なし」）
+      function calculateMode(arr) {
+        const freq = {};
+        arr.forEach(x => freq[x] = (freq[x] || 0) + 1);
+        const maxFreq = Math.max(...Object.values(freq));
+        const modes = Object.keys(freq).filter(k => freq[k] === maxFreq);
+        return modes.length === 1 ? modes[0] : 'なし';
+      }
+
+      // 答え合わせ処理
+      function checkAnswers() {
+        const a = calculateAverage(data);
+        const m = calculateMedian(data);
+        const mo = calculateMode(data);
+        const ok = (avg === a && med === m && mode === mo);
+        setFeedback(ok
+          ? "✅ 全て正解です！"
+          : `❌ 正解：平均=${a}, 中央値=${m}, 最頻値=${mo}`);
+      }
+
+      return (
+        <div>
+          <h2>代表値を計算しよう（アニメーション付き）</h2>
+
+          {/* SVGで棒グラフを描画 */}
+          <svg width="400" height="150">
+            {/* 棒を描く（animatedDataを元にアニメーション表示） */}
+            {animatedData.map((val, i) => (
+              <rect key={i}
+                x={i * 40 + 10}          // 横位置
+                y={150 - val * 4}        // 上からの位置（値が大きいと上に）
+                width="30" height={val * 4}
+                fill="steelblue" />
+            ))}
+            {/* 値を下に表示 */}
+            {data.map((val, i) => (
+              <text key={i}
+                x={i * 40 + 25}
+                y={145}
+                textAnchor="middle"
+                fontSize="12"
+                fill="#000">{val}</text>
+            ))}
+          </svg>
+
+          {/* ユーザーの入力欄 */}
+          <div>
+            <p>上の数値の</p>
+            <label>平均: <input value={avg} onChange={e => setAvg(e.target.value)} /></label>
+            <label>中央値: <input value={med} onChange={e => setMed(e.target.value)} /></label>
+            <label>最頻値: <input value={mode} onChange={e => setMode(e.target.value)} /></label>
+          </div>
+
+          {/* ボタンとフィードバック */}
+          <button onClick={checkAnswers}>答え合わせ</button>
+          <button onClick={generateData}>次の問題</button>
+          <p>{feedback}</p>
+        </div>
+      );
+    }
+
+    // Reactレンダリング
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

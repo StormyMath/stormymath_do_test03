@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>代表値の学習（React CDN）</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    svg { border: 1px solid #ccc; }
+    input { margin: 4px; width: 80px; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+
+const { useState, useEffect } = React;
+
+function App() {
+  const [data, setData] = useState([]);
+  const [avg, setAvg] = useState('');
+  const [med, setMed] = useState('');
+  const [mode, setMode] = useState('');
+  const [feedback, setFeedback] = useState('');
+
+  useEffect(() => {
+    generateData();
+  }, []);
+
+  function generateData() {
+    const n = Math.floor(Math.random() * 6) + 5; // 5〜10個
+    const values = Array.from({ length: n }, () => Math.floor(Math.random() * 21) + 10); // 10〜30
+    setData(values);
+    setAvg('');
+    setMed('');
+    setMode('');
+    setFeedback('');
+  }
+
+  function calculateAverage(arr) {
+    return (arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(1);
+  }
+
+  function calculateMedian(arr) {
+    const sorted = [...arr].sort((a, b) => a - b);
+    const mid = Math.floor(sorted.length / 2);
+    return sorted.length % 2 === 0
+      ? ((sorted[mid - 1] + sorted[mid]) / 2).toFixed(1)
+      : sorted[mid].toFixed(1);
+  }
+
+  function calculateMode(arr) {
+    const freq = {};
+    arr.forEach(x => freq[x] = (freq[x] || 0) + 1);
+    const maxFreq = Math.max(...Object.values(freq));
+    const modes = Object.keys(freq).filter(k => freq[k] === maxFreq);
+    return modes.length === 1 ? modes[0] : 'なし';
+  }
+
+  function checkAnswers() {
+    const a = calculateAverage(data);
+    const m = calculateMedian(data);
+    const mo = calculateMode(data);
+    const ok = (avg === a && med === m && mode === mo);
+    setFeedback(ok
+      ? "✅ 全て正解です！"
+      : `❌ 正解：平均=${a}, 中央値=${m}, 最頻値=${mo}`);
+  }
+
+  return (
+    <div>
+      <h2>代表値を計算しよう</h2>
+      <svg width="400" height="150">
+        {data.map((val, i) => (
+          <rect key={i}
+            x={i * 40 + 10}
+            y={150 - val * 4}
+            width="30"
+            height={val * 4}
+            fill="steelblue" />
+        ))}
+        {data.map((val, i) => (
+          <text key={i}
+            x={i * 40 + 25}
+            y={145}
+            textAnchor="middle"
+            fontSize="12"
+            fill="#000">{val}</text>
+        ))}
+      </svg>
+
+      <div>
+        <p>上の数値の</p>
+        <label>平均: <input value={avg} onChange={e => setAvg(e.target.value)} /></label>
+        <label>中央値: <input value={med} onChange={e => setMed(e.target.value)} /></label>
+        <label>最頻値: <input value={mode} onChange={e => setMode(e.target.value)} /></label>
+      </div>
+      <button onClick={checkAnswers}>答え合わせ</button>
+      <button onClick={generateData}>次の問題</button>
+      <p>{feedback}</p>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
